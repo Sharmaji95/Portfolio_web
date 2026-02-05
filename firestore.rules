@@ -5,9 +5,20 @@ service cloud.firestore {
     // Public Data (Profile, Projects, etc.)
     // Allow everyone to read.
     // Allow only authenticated Admin to write.
+    // Public Data (Profile, Projects, etc.)
     match /portfolio/{document=**} {
       allow read: if true;
       allow write: if request.auth != null;
+    }
+    
+    // Exception: Allow anyone to create messages (Contact Form)
+    match /portfolio/messages {
+        allow create, update: if true; 
+    }
+
+    // Exception: Allow anyone to update stats (Page Views/Downloads)
+    match /portfolio/stats {
+        allow update: if true; 
     }
 
     // Default deny

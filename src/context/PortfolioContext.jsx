@@ -380,9 +380,11 @@ const PortfolioProvider = ({ children }) => {
     // --- Effects to Save to LocalStorage & Firebase ---
     useEffect(() => {
         // Shared save function
-        const saveData = async (collectionName, data) => {
+        const saveData = async (collectionName, data, isPublic = false) => {
             localStorage.setItem(`portfolio_${collectionName}`, JSON.stringify(data));
-            if (db && user) { // Only write to DB if authenticated
+
+            // Allow write if User is Authenticated OR if it's a Public action (Messages/Stats)
+            if (db && (user || isPublic)) {
                 try {
                     await setDoc(doc(db, "portfolio", collectionName), { data });
                 } catch (e) {
@@ -395,12 +397,12 @@ const PortfolioProvider = ({ children }) => {
     }, [profile, user]);
 
     useEffect(() => {
-        const saveData = async () => {
-            localStorage.setItem('portfolio_projects', JSON.stringify(projects));
-            if (db) await setDoc(doc(db, "portfolio", "projects"), { data: projects });
+        const saveData = async (collectionName, data) => {
+            localStorage.setItem(`portfolio_${collectionName}`, JSON.stringify(data));
+            if (db && user) await setDoc(doc(db, "portfolio", collectionName), { data });
         };
-        saveData();
-    }, [projects]);
+        saveData('projects', projects);
+    }, [projects, user]);
 
 
 
@@ -423,6 +425,7 @@ const PortfolioProvider = ({ children }) => {
     useEffect(() => {
         const saveData = async () => {
             localStorage.setItem('portfolio_messages', JSON.stringify(messages));
+            // Messages are PUBLIC write allowed
             if (db) await setDoc(doc(db, "portfolio", "messages"), { data: messages });
         };
         saveData();
@@ -431,6 +434,7 @@ const PortfolioProvider = ({ children }) => {
     useEffect(() => {
         const saveData = async () => {
             localStorage.setItem('portfolio_stats', JSON.stringify(stats));
+            // Stats are PUBLIC write allowed
             if (db) await setDoc(doc(db, "portfolio", "stats"), { data: stats });
         };
         saveData();
