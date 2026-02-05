@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 const PortfolioContext = createContext();
@@ -382,7 +382,7 @@ const PortfolioProvider = ({ children }) => {
         // Shared save function
         const saveData = async (collectionName, data) => {
             localStorage.setItem(`portfolio_${collectionName}`, JSON.stringify(data));
-            if (db) {
+            if (db && user) { // Only write to DB if authenticated
                 try {
                     await setDoc(doc(db, "portfolio", collectionName), { data });
                 } catch (e) {
@@ -392,7 +392,7 @@ const PortfolioProvider = ({ children }) => {
         };
 
         saveData('profile', profile);
-    }, [profile]);
+    }, [profile, user]);
 
     useEffect(() => {
         const saveData = async () => {
@@ -469,46 +469,48 @@ const PortfolioProvider = ({ children }) => {
     }, [sectionVisibility]);
 
 
-    // --- Load Data from Firebase on Mount ---
+    // --- Realtime Data Sync (onSnapshot) ---
     useEffect(() => {
-        if (!db) return;
-
-        const loadFromFirebase = async () => {
-            console.log("Attempting to load data from Firebase...");
-            const collections = [
-                { name: 'profile', setter: setProfile },
-                { name: 'projects', setter: setProjects },
-                { name: 'skills', setter: setSkills },
-                { name: 'experiences', setter: setExperiences },
-                { name: 'education', setter: setEducation },
-                { name: 'messages', setter: setMessages },
-                { name: 'stats', setter: setStats },
-                { name: 'qna', setter: setCustomQnA },
-                { name: 'liveAnalysis', setter: setLiveAnalysis },
-                { name: 'sectionVisibility', setter: setSectionVisibility }
-            ];
-
-            // Use Promise.all for parallel fetching
-            await Promise.all(collections.map(async (col) => {
-                try {
-                    const docRef = doc(db, "portfolio", col.name);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const savedData = docSnap.data().data;
-                        if (savedData) {
-                            console.log(`Loaded ${col.name} from Firebase`);
-                            col.setter(savedData);
-                        }
-                    }
-                } catch (e) {
-                    console.error(`Failed to load ${col.name} from Firebase`, e);
-                }
-            }));
-
+        if (!db) {
             setIsLoadingData(false);
-        };
+            return;
+        }
 
-        loadFromFirebase();
+        console.log("Setting up realtime listeners...");
+        const collections = [
+            { name: 'profile', setter: setProfile },
+            { name: 'projects', setter: setProjects },
+            { name: 'skills', setter: setSkills },
+            { name: 'experiences', setter: setExperiences },
+            { name: 'education', setter: setEducation },
+            { name: 'messages', setter: setMessages },
+            { name: 'stats', setter: setStats },
+            { name: 'qna', setter: setCustomQnA },
+            { name: 'liveAnalysis', setter: setLiveAnalysis },
+            { name: 'sectionVisibility', setter: setSectionVisibility }
+        ];
+
+        const unsubscribes = collections.map(col => {
+            return onSnapshot(doc(db, "portfolio", col.name), (docSnap) => {
+                if (docSnap.exists()) {
+                    const savedData = docSnap.data().data;
+                    if (savedData) {
+                        console.log(`Realtime Update: ${col.name}`);
+                        col.setter(savedData);
+                    }
+                }
+            }, (error) => {
+                console.error(`Listener failed for ${col.name}:`, error);
+            });
+        });
+
+        // Add a small delay to allow listeners to fire before dismissing loading screen
+        setTimeout(() => setIsLoadingData(false), 2000);
+
+        return () => {
+            console.log("Cleaning up listeners...");
+            unsubscribes.forEach(unsub => unsub());
+        };
     }, []);
 
     // --- Actions --- (Data actions only, auth actions moved up)
