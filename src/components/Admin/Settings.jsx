@@ -420,8 +420,9 @@ const Settings = () => {
                                             type="text"
                                             value={tool.name}
                                             onChange={(e) => {
-                                                const newStack = [...formData.skills.techStack];
-                                                newStack[index].name = e.target.value;
+                                                const newStack = formData.skills.techStack.map((t, i) =>
+                                                    i === index ? { ...t, name: e.target.value } : t
+                                                );
                                                 setFormData(prev => ({ ...prev, skills: { ...prev.skills, techStack: newStack } }));
                                             }}
                                             className="w-full bg-transparent text-white text-sm font-medium focus:outline-none border-b border-white/10 focus:border-emerald-500"
@@ -433,8 +434,9 @@ const Settings = () => {
                                             type="text"
                                             value={tool.icon}
                                             onChange={(e) => {
-                                                const newStack = [...formData.skills.techStack];
-                                                newStack[index].icon = e.target.value;
+                                                const newStack = formData.skills.techStack.map((t, i) =>
+                                                    i === index ? { ...t, icon: e.target.value } : t
+                                                );
                                                 setFormData(prev => ({ ...prev, skills: { ...prev.skills, techStack: newStack } }));
                                             }}
                                             className="w-full bg-transparent text-gray-400 text-xs font-mono focus:outline-none border-b border-white/10 focus:border-emerald-500"
