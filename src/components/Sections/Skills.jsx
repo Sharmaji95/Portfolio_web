@@ -29,7 +29,26 @@ const Skills = () => {
 
     // Helper to render icon by name
     const renderIcon = (iconName) => {
-        const IconComponent = LucideIcons[iconName];
+        if (!iconName) return <LucideIcons.Code2 size={24} />;
+
+        // 1. Try exact match
+        let IconComponent = LucideIcons[iconName];
+
+        // 2. Try PascalCase (first char upper) for simple names like "codepen" -> "Codepen"
+        if (!IconComponent) {
+            const pascalName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
+            IconComponent = LucideIcons[pascalName];
+        }
+
+        // 3. Try to find case-insensitive match (more expensive, but robust for "fileSpreadsheet" matches)
+        if (!IconComponent) {
+            const lowerName = iconName.toLowerCase();
+            const foundKey = Object.keys(LucideIcons).find(key => key.toLowerCase() === lowerName);
+            if (foundKey) {
+                IconComponent = LucideIcons[foundKey];
+            }
+        }
+
         return IconComponent ? <IconComponent size={24} /> : <LucideIcons.Code2 size={24} />;
     };
 

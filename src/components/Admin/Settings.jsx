@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Save, Upload, Trash2, TrendingUp, Lock, User, X, Loader2 } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import { usePortfolio } from "../../context/PortfolioContext";
 import Cropper from "react-easy-crop";
 import { toast } from "react-hot-toast";
@@ -429,7 +430,30 @@ const Settings = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-[10px] uppercase font-bold text-gray-500">Icon (Lucide Name)</label>
+                                        <div className="flex justify-between items-center mb-1">
+                                            <label className="text-[10px] uppercase font-bold text-gray-500">Icon (Lucide Name)</label>
+                                            {(() => {
+                                                if (!tool.icon) return null;
+                                                // Try finding the icon case-insensitively
+                                                const iconName = tool.icon;
+                                                let IconComp = LucideIcons[iconName];
+                                                if (!IconComp) {
+                                                    const pascalName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
+                                                    IconComp = LucideIcons[pascalName];
+                                                }
+                                                if (!IconComp) {
+                                                    const lowerName = iconName.toLowerCase();
+                                                    const key = Object.keys(LucideIcons).find(k => k.toLowerCase() === lowerName);
+                                                    if (key) IconComp = LucideIcons[key];
+                                                }
+
+                                                return IconComp ? (
+                                                    <div className="text-emerald-400 bg-emerald-500/10 p-1 rounded">
+                                                        <IconComp size={16} />
+                                                    </div>
+                                                ) : <span className="text-[10px] text-red-500">Invalid</span>;
+                                            })()}
+                                        </div>
                                         <input
                                             type="text"
                                             value={tool.icon}
