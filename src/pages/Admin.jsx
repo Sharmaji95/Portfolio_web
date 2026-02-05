@@ -19,8 +19,9 @@ const Admin = () => {
             await login(email, password);
             toast.success("Welcome back, Admin!");
         } catch (err) {
-            setError("Invalid email or password");
-            toast.error("Login Failed");
+            console.error(err);
+            setError(err.message || "Login Failed");
+            toast.error("Login Failed: " + err.message);
         }
     };
 
