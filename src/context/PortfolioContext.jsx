@@ -426,7 +426,17 @@ const PortfolioProvider = ({ children }) => {
         const saveData = async () => {
             localStorage.setItem('portfolio_messages', JSON.stringify(messages));
             // Messages are PUBLIC write allowed
-            if (db) await setDoc(doc(db, "portfolio", "messages"), { data: messages });
+            if (db) {
+                try {
+                    await setDoc(doc(db, "portfolio", "messages"), { data: messages });
+                    console.log("Messages sync success");
+                } catch (e) {
+                    console.error("Messages sync failed:", e);
+                    // alert("Failed to save message to cloud: " + e.message); // Fallback debug
+                }
+            } else {
+                console.warn("DB not initialized - Message saved locally only");
+            }
         };
         saveData();
     }, [messages]);
@@ -435,7 +445,14 @@ const PortfolioProvider = ({ children }) => {
         const saveData = async () => {
             localStorage.setItem('portfolio_stats', JSON.stringify(stats));
             // Stats are PUBLIC write allowed
-            if (db) await setDoc(doc(db, "portfolio", "stats"), { data: stats });
+            if (db) {
+                try {
+                    await setDoc(doc(db, "portfolio", "stats"), { data: stats });
+                    console.log("Stats sync success");
+                } catch (e) {
+                    console.error("Stats sync failed:", e);
+                }
+            }
         };
         saveData();
     }, [stats]);
