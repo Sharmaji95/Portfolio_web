@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import GoogleAnalytics from './components/GoogleAnalytics';
 import PortfolioEffects from './components/PortfolioEffects';
 import ContentProtection from './components/ContentProtection';
+import { Analytics } from '@vercel/analytics/react';
 
 import { usePortfolio } from './context/PortfolioContext';
 
@@ -53,6 +54,7 @@ function App() {
             <Route path="/admin" element={<Admin />} />
           </Routes>
         </Router>
+        <Analytics />
       </AppLoader>
     </PortfolioProvider>
   )
