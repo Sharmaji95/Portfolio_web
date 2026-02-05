@@ -7,6 +7,25 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 import PortfolioEffects from './components/PortfolioEffects';
 import ContentProtection from './components/ContentProtection';
 
+import { usePortfolio } from './context/PortfolioContext';
+
+const AppLoader = ({ children }) => {
+  const { isLoadingData } = usePortfolio();
+
+  if (isLoadingData) {
+    return (
+      <div className="fixed inset-0 bg-deep-charcoal flex items-center justify-center z-50">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+          <p className="text-emerald-500/80 font-mono text-sm animate-pulse">Loading Portfolio...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return children;
+};
+
 function App() {
   return (
     <PortfolioProvider>
@@ -26,13 +45,15 @@ function App() {
           },
         },
       }} />
-      <Router>
-        <GoogleAnalytics />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<Admin />} />
-        </Routes>
-      </Router>
+      <AppLoader>
+        <Router>
+          <GoogleAnalytics />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/admin" element={<Admin />} />
+          </Routes>
+        </Router>
+      </AppLoader>
     </PortfolioProvider>
   )
 }

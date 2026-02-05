@@ -14,6 +14,11 @@ const PortfolioProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Global Data Loading State (prevents showing demo data on first load)
+    const [isLoadingData, setIsLoadingData] = useState(() => {
+        return !localStorage.getItem('portfolio_profile');
+    });
+
     // Monitor Auth State
     useEffect(() => {
         if (!auth) {
@@ -483,7 +488,8 @@ const PortfolioProvider = ({ children }) => {
                 { name: 'sectionVisibility', setter: setSectionVisibility }
             ];
 
-            for (const col of collections) {
+            // Use Promise.all for parallel fetching
+            await Promise.all(collections.map(async (col) => {
                 try {
                     const docRef = doc(db, "portfolio", col.name);
                     const docSnap = await getDoc(docRef);
@@ -497,7 +503,9 @@ const PortfolioProvider = ({ children }) => {
                 } catch (e) {
                     console.error(`Failed to load ${col.name} from Firebase`, e);
                 }
-            }
+            }));
+
+            setIsLoadingData(false);
         };
 
         loadFromFirebase();
@@ -617,6 +625,7 @@ const PortfolioProvider = ({ children }) => {
     return (
         <PortfolioContext.Provider value={{
             profile, projects, testimonials, experiences, education, messages, stats, isAuthenticated,
+            isLoadingData,
             login, logout, updateProfile, addProject, updateProject, deleteProject,
             addTestimonial, updateTestimonial, deleteTestimonial,
             addExperience, updateExperience, deleteExperience,
