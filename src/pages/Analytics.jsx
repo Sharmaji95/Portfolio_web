@@ -42,9 +42,9 @@ const Analytics = () => {
         { name: 'Mobile', value: 35, color: '#3b82f6' },  // Blue
     ];
 
-    // Project Engagement Mock (you can add a 'clicks' field to projects later)
-    const projectData = projects.map(p => ({
-        name: p.title.substring(0, 15) + '...',
+    // Project Engagement Mock
+    const projectData = (projects || []).map(p => ({
+        name: p.title ? (p.title.length > 15 ? p.title.substring(0, 15) + '...' : p.title) : 'Untitled',
         clicks: Math.floor(Math.random() * 50) + 10 // Mock Clicks
     }));
 
