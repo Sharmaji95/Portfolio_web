@@ -19,6 +19,11 @@ const PortfolioProvider = ({ children }) => {
         return !localStorage.getItem('portfolio_profile');
     });
 
+    // Developer Mode State (Disables Content Protection)
+    const [devMode, setDevMode] = useState(() => {
+        return localStorage.getItem('portfolio_dev_mode') === 'true';
+    });
+
     // Monitor Auth State
     useEffect(() => {
         if (!auth) {
@@ -58,6 +63,16 @@ const PortfolioProvider = ({ children }) => {
         } else {
             setUser(null);
         }
+        setDevMode(false); // Auto-reset Dev Mode on logout for security
+        localStorage.setItem('portfolio_dev_mode', 'false');
+    };
+
+    const toggleDevMode = () => {
+        setDevMode(prev => {
+            const newVal = !prev;
+            localStorage.setItem('portfolio_dev_mode', String(newVal));
+            return newVal;
+        });
     };
 
     const isAuthenticated = !!user;
@@ -657,7 +672,8 @@ const PortfolioProvider = ({ children }) => {
             skills, updateSkills,
             customQnA, addQnA, updateQnA, deleteQnA,
             liveAnalysis, updateLiveAnalysis,
-            sectionVisibility, toggleSectionVisibility
+            sectionVisibility, toggleSectionVisibility,
+            devMode, toggleDevMode
         }}>
             {children}
         </PortfolioContext.Provider>
