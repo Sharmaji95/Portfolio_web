@@ -11,6 +11,7 @@ import SettingsComponent from "./Settings";
 import Messages from "./Messages";
 import AIManager from "./AIManager";
 import LiveAnalysisManager from "./LiveAnalysisManager";
+import Analytics from "../../pages/Analytics"; // Imported Analytics
 import SectionManager from "./SectionManager";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -21,6 +22,7 @@ const AdminLayout = ({ children, activeTab, setActiveTab }) => {
 
     const menuItems = [
         { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+        { id: "analytics", label: "Analytics", icon: <BarChart3 size={20} /> }, // New Tab
         { id: "live-analysis", label: "Live Analysis", icon: <BarChart3 size={20} /> },
         { id: "sections", label: "Manage Sections", icon: <Layers size={20} /> },
         { id: "projects", label: "Projects", icon: <FolderKanban size={20} /> },
@@ -35,6 +37,7 @@ const AdminLayout = ({ children, activeTab, setActiveTab }) => {
     const renderContent = () => {
         switch (activeTab) {
             case "dashboard": return <DashboardStats />;
+            case "analytics": return <Analytics />; // Render Analytics
             case "live-analysis": return <LiveAnalysisManager />;
             case "sections": return <SectionManager />;
             case "projects": return <ProjectManager />;

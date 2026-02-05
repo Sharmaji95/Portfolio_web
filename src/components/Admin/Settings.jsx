@@ -6,7 +6,7 @@ import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Settings = () => {
-    const { profile, updateProfile, changePassword, skills, updateSkills } = usePortfolio();
+    const { profile, updateProfile, changePassword, skills, updateSkills, devMode, toggleDevMode } = usePortfolio();
 
     // Profile State
     const [formData, setFormData] = useState({ ...profile, skills: skills || {} });
@@ -592,6 +592,33 @@ const Settings = () => {
                             </div>
                         </div>
                     )}
+                </div>
+            </div>
+
+            {/* Developer Mode */}
+            <div className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 p-8 rounded-2xl shadow-xl mb-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-xl font-bold text-white mb-1">Developer Mode</h3>
+                        <p className="text-gray-400 text-sm">
+                            Disables content protection (Right-Click, Inspect Element) for debugging.
+                            <br />
+                            <span className="text-yellow-500 text-xs"> Automatically disables on logout.</span>
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        {devMode && (
+                            <span className="text-xs bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded border border-yellow-500/20 animate-pulse">
+                                Active
+                            </span>
+                        )}
+                        <button
+                            onClick={toggleDevMode}
+                            className={`w-14 h-8 rounded-full relative transition-colors duration-300 ${devMode ? 'bg-emerald-500' : 'bg-zinc-700'}`}
+                        >
+                            <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 ${devMode ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                        </button>
+                    </div>
                 </div>
             </div>
 
