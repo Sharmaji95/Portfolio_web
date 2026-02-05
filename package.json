@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-pdf/renderer": "^4.3.2",
     "@tailwindcss/vite": "^4.1.18",
+    "@vercel/analytics": "^1.6.1",
     "dompurify": "^3.3.1",
     "firebase": "^12.8.0",
     "framer-motion": "^12.31.0",
