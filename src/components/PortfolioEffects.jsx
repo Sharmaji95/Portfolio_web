@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { usePortfolio } from '../context/PortfolioContext';
-import { initGA } from './GoogleAnalytics';
 import { generateFavicon } from '../utils/faviconGenerator';
 
 const PortfolioEffects = () => {
@@ -40,13 +39,7 @@ const PortfolioEffects = () => {
 
     }, [profile?.name, profile?.favicon]);
 
-    // 2. Analytics Init Effect
-    useEffect(() => {
-        const gaId = import.meta.env.VITE_GA_ID;
-        if (gaId) {
-            initGA(gaId);
-        }
-    }, []);
+
 
     return null; // This component renders nothing, just handles side effects
 };
