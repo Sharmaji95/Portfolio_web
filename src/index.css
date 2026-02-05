@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-deep-charcoal: #0f172a;
+  --color-emerald-green: #10b981;
+}
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-md border border-white/10 shadow-lg;
+    background-color: rgb(255 255 255 / 0.05);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-green to-teal-400;
+  }
+}
+
+body {
+  @apply bg-deep-charcoal text-white overflow-x-hidden antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+  /* Offset for fixed navbar */
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-deep-charcoal;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-emerald-green;
+}
