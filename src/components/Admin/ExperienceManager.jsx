@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Edit, Trash, Plus, X, Save, Briefcase } from "lucide-react";
+import { Edit, Trash, Plus, X, Save, Briefcase, ArrowUp, ArrowDown } from "lucide-react";
 import { usePortfolio } from "../../context/PortfolioContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 const ExperienceManager = () => {
-    const { experiences, addExperience, updateExperience, deleteExperience } = usePortfolio();
+    const { experiences, addExperience, updateExperience, deleteExperience, reorderExperiences } = usePortfolio();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({ role: "", company: "", period: "", description: "" });
@@ -40,6 +40,22 @@ const ExperienceManager = () => {
         }
     };
 
+    const moveExperience = (index, direction) => {
+        const newExperiences = [...experiences];
+        if (direction === 'up' && index > 0) {
+            const temp = newExperiences[index];
+            newExperiences[index] = newExperiences[index - 1];
+            newExperiences[index - 1] = temp;
+        } else if (direction === 'down' && index < experiences.length - 1) {
+            const temp = newExperiences[index];
+            newExperiences[index] = newExperiences[index + 1];
+            newExperiences[index + 1] = temp;
+        } else {
+            return;
+        }
+        reorderExperiences(newExperiences);
+    };
+
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
@@ -54,7 +70,7 @@ const ExperienceManager = () => {
             </div>
 
             <div className="space-y-4">
-                {experiences.map((exp) => (
+                {experiences.map((exp, index) => (
                     <div key={exp.id} className="bg-zinc-900/50 backdrop-blur-xl border border-white/5 p-6 rounded-2xl flex flex-col md:flex-row gap-6 relative group hover:border-emerald-500/30 transition-all shadow-lg hover:shadow-emerald-500/5">
                         <div className="flex-shrink-0">
                             <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20 group-hover:scale-110 transition-transform duration-300">
@@ -74,10 +90,16 @@ const ExperienceManager = () => {
                         </div>
 
                         <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-4 group-hover:translate-x-0 duration-200">
-                            <button onClick={() => openModal(exp)} className="p-2.5 bg-black/40 hover:bg-white/10 rounded-xl text-gray-300 hover:text-white transition-all backdrop-blur-sm border border-white/5">
+                            <button disabled={index === 0} onClick={() => moveExperience(index, 'up')} className="p-2.5 bg-black/40 hover:bg-white/10 rounded-xl text-gray-300 hover:text-white transition-all backdrop-blur-sm border border-white/5 disabled:opacity-30 disabled:cursor-not-allowed" title="Move Up">
+                                <ArrowUp size={18} />
+                            </button>
+                            <button disabled={index === experiences.length - 1} onClick={() => moveExperience(index, 'down')} className="p-2.5 bg-black/40 hover:bg-white/10 rounded-xl text-gray-300 hover:text-white transition-all backdrop-blur-sm border border-white/5 disabled:opacity-30 disabled:cursor-not-allowed" title="Move Down">
+                                <ArrowDown size={18} />
+                            </button>
+                            <button onClick={() => openModal(exp)} className="p-2.5 bg-black/40 hover:bg-white/10 rounded-xl text-gray-300 hover:text-white transition-all backdrop-blur-sm border border-white/5" title="Edit">
                                 <Edit size={18} />
                             </button>
-                            <button onClick={() => handleDelete(exp.id)} className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all border border-red-500/20">
+                            <button onClick={() => handleDelete(exp.id)} className="p-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-all border border-red-500/20" title="Delete">
                                 <Trash size={18} />
                             </button>
                         </div>

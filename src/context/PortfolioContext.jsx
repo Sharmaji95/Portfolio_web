@@ -600,6 +600,10 @@ const PortfolioProvider = ({ children }) => {
         setExperiences(prev => prev.filter(e => e.id !== id));
     };
 
+    const reorderExperiences = (newExperiences) => {
+        setExperiences(newExperiences);
+    };
+
     const addEducation = (edu) => {
         setEducation(prev => [...prev, { ...edu, id: Date.now() }]);
     };
@@ -666,7 +670,7 @@ const PortfolioProvider = ({ children }) => {
             isLoadingData,
             login, logout, updateProfile, addProject, updateProject, deleteProject,
             addTestimonial, updateTestimonial, deleteTestimonial,
-            addExperience, updateExperience, deleteExperience,
+            addExperience, updateExperience, deleteExperience, reorderExperiences,
             addEducation, updateEducation, deleteEducation,
             addMessage, deleteMessage, markMessageRead, incrementStats,
             skills, updateSkills,
